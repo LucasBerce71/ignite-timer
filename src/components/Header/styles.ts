@@ -36,3 +36,9 @@ export const HeaderContainer = styled.header`
         }
     }
 `;
+
+export const LogoContainer = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+`;
