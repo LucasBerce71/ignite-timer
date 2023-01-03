@@ -81,6 +81,14 @@ export const MinutesAmountInput = styled(BaseInput)`
     width: 4rem;    
 
     text-align: center;
+    text-shadow: 0 0 0 ${props => props.theme["gray-100"]};
+
+    color: transparent;
+    
+
+    &:focus {
+      outline: none;
+    }
 `;
 
 export const CountdownContainer = styled.div`
