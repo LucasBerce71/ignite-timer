@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as zod from "zod";
 import { HandPalm, Play } from "phosphor-react";
 import { differenceInSeconds } from "date-fns";
+import * as zod from "zod";
+
+import projectsOptions from "../../mocks/projectsOptions";
 
 import {
     CountdownContainer,
@@ -15,6 +17,7 @@ import {
     StopCountdownButton,
     TaskInput
 } from "./styles";
+import { generateNativeId } from "../../utils/generateNativeId";
 
 const newCycleFormValidationSchema = zod.object({
     task: zod.string().min(1, 'Informe a tarefa'),
@@ -49,6 +52,14 @@ export function Home() {
     });
 
     const activeCycle = cycles.find(cycle => cycle.id === activeCycleId);
+    const task = watch('task');
+    const isSubmitDisabled = !task;
+    const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
+    const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
+    const minutesAmount = Math.floor(currentSeconds / 60);
+    const secondsAmount = currentSeconds % 60;
+    const minutes = String(minutesAmount).padStart(2, '0');
+    const seconds = String(secondsAmount).padStart(2, '0');
 
     useEffect(() => {
         let interval: number;
@@ -65,7 +76,7 @@ export function Home() {
     }, [activeCycle]);
 
     function handleCreateNewCycle(data: NewCyclleFormData) {
-        const id = String(new Date().getTime());
+        const id = generateNativeId();
 
         const newCycle: Cycle = {
             id,
@@ -95,15 +106,6 @@ export function Home() {
         document.title = "Ignite Timer";
     }
 
-    const task = watch('task');
-    const isSubmitDisabled = !task;
-    const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
-    const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
-    const minutesAmount = Math.floor(currentSeconds / 60);
-    const secondsAmount = currentSeconds % 60;
-    const minutes = String(minutesAmount).padStart(2, '0');
-    const seconds = String(secondsAmount).padStart(2, '0');
-
     useEffect(() => {
         if (activeCycle) {
             document.title = `${minutes}:${seconds}`;
@@ -120,13 +122,14 @@ export function Home() {
                         list="task-suggestions"
                         placeholder="Dê um nome para o seu projeto"
                         isDisabled={!!activeCycle}
+                        autoComplete="off"
                         {...register('task')}
                     />
 
                     <datalist id="task-suggestions">
-                        <option value="Projeto 1" />
-                        <option value="Projeto 2" />
-                        <option value="Projeto 3" />
+                        {projectsOptions.map(project => (
+                            <option value={project} />
+                        ))}
                     </datalist>
 
                     <label htmlFor="minutesAmount">durante</label>
@@ -138,6 +141,8 @@ export function Home() {
                         min={5}
                         max={60}
                         isDisabled={!!activeCycle}
+                        autoComplete="off"
+                        onKeyDown={(event) => event.preventDefault()}
                         {...register('minutesAmount', { valueAsNumber: true })}
                     />
 
