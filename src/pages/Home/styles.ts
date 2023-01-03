@@ -33,8 +33,16 @@ export const FormContainer = styled.div`
     flex-wrap: wrap;
 `;
 
-const BaseInput = styled.input`
+interface BaseInputProps {
+    isDisabled?: boolean;
+}
+
+const BaseInput = styled.input.attrs((props: BaseInputProps) => ({
+    disabled: props.isDisabled,
+}))`
     background: transparent;
+
+    cursor: ${(props: BaseInputProps) => props.isDisabled ? "not-allowed" : "pointer"};
     
     height: 2.5rem;
 
@@ -109,10 +117,10 @@ export const Separator = styled.div`
     justify-content: center;
 `;
 
-export const StartCountdownButton = styled.button`
+export const BaseCountdownButton = styled.button`
     width: 100%;
 
-    border: 0;
+    border: none;
     border-radius: 8px;
 
     padding: 1rem;
@@ -121,15 +129,13 @@ export const StartCountdownButton = styled.button`
     align-items: center;
     justify-content: center;
 
+    color: ${props => props.theme["gray-100"]};
+
     gap: 0.5rem;
 
     font-weight: bold;
 
     cursor: pointer;
-
-    background: ${props => props.theme["green-500"]};
-
-    color: ${props => props.theme["gray-100"]};
 
     transition: .2s;
 
@@ -137,8 +143,22 @@ export const StartCountdownButton = styled.button`
         opacity: 0.7;
         cursor: not-allowed;
     }
+`;
+
+export const StartCountdownButton = styled(BaseCountdownButton)`
+    background: ${props => props.theme["green-500"]};
+
+    color: ${props => props.theme["gray-100"]};
 
     &:not(:disabled):hover {
         background: ${props => props.theme["green-700"]};
+    }
+`;
+
+export const StopCountdownButton = styled(BaseCountdownButton)`
+    background: ${props => props.theme["red-500"]};
+
+    &:not(:disabled):hover {
+        background: ${props => props.theme["red-700"]};
     }
 `;
